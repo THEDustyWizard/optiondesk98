@@ -86,7 +86,7 @@
 <!-- Core -->
 <script src="/static/js/window.js"></script>
 <script src="/static/js/desktop.js"></script>
-<!-- Programs -->
+<!-- Programs (each defines window.XxxApp) -->
 <script src="/static/js/programs/market-scanner.js"></script>
 <script src="/static/js/programs/options-analyzer.js"></script>
 <script src="/static/js/programs/sector-scanner.js"></script>
@@ -99,7 +99,9 @@
 <script src="/static/js/programs/settings.js"></script>
 <script src="/static/js/programs/portfolio.js"></script>
 <script src="/static/js/programs/notepad.js"></script>
-<script src="/static/js/programs/program-loader.js"></script>
+<!-- Extras MUST load before program-loader (defines window._openRecycleBin, addHelpButton) -->
 <script src="/static/js/extras.js"></script>
+<!-- Program loader (unified WM.create override — must be LAST) -->
+<script src="/static/js/programs/program-loader.js"></script>
 </body>
 </html>

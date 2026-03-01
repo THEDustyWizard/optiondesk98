@@ -161,28 +161,79 @@ def recommendations(symbol):
 
 @app.route("/api/news")
 def news():
-    """Fetch financial news via RSS."""
+    """Fetch and aggregate financial news via RSS feeds."""
     try:
         import feedparser
         feeds = [
             ("Yahoo Finance", "https://finance.yahoo.com/news/rssindex"),
-            ("Reuters Business", "https://feeds.reuters.com/reuters/businessNews"),
+            ("Reuters", "https://feeds.reuters.com/reuters/businessNews"),
             ("MarketWatch", "https://feeds.marketwatch.com/marketwatch/topstories/"),
+            ("CNBC", "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=100003114"),
+            ("Yahoo Finance", "https://finance.yahoo.com/rss/topstories"),
         ]
         articles = []
+        seen_titles = set()
         for source, url in feeds:
             try:
                 d = feedparser.parse(url)
-                for entry in d.entries[:10]:
+                for entry in d.entries[:15]:
+                    title = entry.get("title", "").strip()
+                    if not title or title in seen_titles:
+                        continue
+                    seen_titles.add(title)
                     articles.append({
-                        "title": entry.get("title", ""),
+                        "title": title,
                         "url": entry.get("link", ""),
                         "source": source,
-                        "date": entry.get("published", ""),
+                        "date": entry.get("published", entry.get("updated", "")),
                     })
             except Exception:
                 pass
         articles.sort(key=lambda x: x.get("date", ""), reverse=True)
-        return jsonify({"articles": articles[:30], "count": len(articles)})
+        return jsonify({"articles": articles[:50], "count": len(articles)})
     except ImportError:
         return jsonify({"error": "feedparser not installed", "articles": [], "count": 0})
+
+
+import json as _json
+import os as _os
+
+SETTINGS_FILE = _os.path.join(_os.path.dirname(__file__), "settings.json")
+
+@app.route("/api/settings", methods=["GET"])
+def get_settings():
+    try:
+        if _os.path.exists(SETTINGS_FILE):
+            with open(SETTINGS_FILE) as f:
+                return jsonify(_json.load(f))
+        return jsonify({})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/api/settings", methods=["POST"])
+def save_settings():
+    try:
+        data = request.get_json()
+        with open(SETTINGS_FILE, "w") as f:
+            _json.dump(data, f, indent=2)
+        
+        # Apply API keys to environment so providers can pick them up
+        key_map = {
+            "tradier_key": "TRADIER_API_KEY",
+            "polygon_key": "POLYGON_API_KEY",
+            "av_key": "ALPHA_VANTAGE_KEY",
+            "schwab_key": "SCHWAB_API_KEY",
+            "schwab_secret": "SCHWAB_API_SECRET",
+        }
+        for field, env_var in key_map.items():
+            val = data.get(field, "")
+            if val:
+                _os.environ[env_var] = val
+        
+        # Reinitialize data engine with new keys
+        global _engine
+        _engine = None
+        
+        return jsonify({"status": "saved", "keys_applied": True})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

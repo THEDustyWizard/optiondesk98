@@ -1,4 +1,4 @@
-/* Program Loader — hooks into WM to init program UIs + inject help buttons */
+/* Program Loader — unified WM.create hook for all program init + extras */
 (function() {
   const PROGRAM_INIT = {
     'market-scanner': () => window.MarketScanner && window.MarketScanner.init('body-market-scanner'),
@@ -25,15 +25,30 @@
     'portfolio': 'Premium',
   };
 
-  // Store original create before extras.js overrides it
-  const _origCreate = WM.create;
-  
+  // Save the REAL original WM.create (before any overrides)
+  const _realCreate = WM.create.bind(WM);
+
+  // Single override that handles everything
   WM.create = function(id, icon, title) {
-    _origCreate.call(WM, id, icon, title);
+    // Recycle bin opens as dialog, not window
+    if (id === 'recycle-bin') {
+      if (window._openRecycleBin) window._openRecycleBin();
+      return;
+    }
+
+    // Create the window
+    _realCreate(id, icon, title);
+
+    // Initialize the program UI
     const initFn = PROGRAM_INIT[id];
-    if (initFn) setTimeout(initFn, 50);
-    
-    // Inject help button into status bar
+    if (initFn) {
+      setTimeout(() => {
+        initFn();
+        console.log('[ProgramLoader] Initialized:', id);
+      }, 50);
+    }
+
+    // Inject help button
     const helpTopic = HELP_TOPICS[id];
     if (helpTopic && window.addHelpButton) {
       setTimeout(() => {
