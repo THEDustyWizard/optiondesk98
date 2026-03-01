@@ -63,7 +63,7 @@ A Win98-themed options trading dashboard that runs locally. Real market data, th
 ### Installation
 
 ```bash
-git clone https://github.com/yourusername/optiondesk98.git
+git clone https://github.com/THEDustyWizard/optiondesk98.git
 cd optiondesk98
 pip install -r requirements.txt
 ```
@@ -89,7 +89,7 @@ Set these environment variables for additional data providers:
 
 ```bash
 export TRADIER_API_KEY="your-key-here"     # Tradier (sandbox)
-export POLYGON_API_KEY="your-key-here"     # Polygon.io (coming soon)
+export POLYGON_API_KEY="your-key-here"     # Massive.com (coming soon)
 export ALPHA_VANTAGE_KEY="your-key-here"   # Alpha Vantage (coming soon)
 ```
 
