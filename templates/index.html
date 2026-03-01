@@ -13,26 +13,73 @@
   <div id="icon-grid"></div>
 </div>
 
+<!-- Context Menu -->
 <div id="context-menu">
-  <div class="ctx-item" onclick="alert('Properties — Coming soon')">Properties</div>
+  <div class="ctx-item" id="ctx-properties">Properties</div>
   <div class="ctx-divider"></div>
   <div class="ctx-item" onclick="location.reload()">Refresh</div>
   <div class="ctx-divider"></div>
   <div class="ctx-item" onclick="alert('New Folder — Coming soon')">New Folder</div>
 </div>
 
+<!-- Taskbar -->
 <div id="taskbar">
   <button id="start-btn"><span class="start-icon">📈</span> Start</button>
   <div id="taskbar-programs"></div>
   <div id="clock"></div>
 </div>
 
+<!-- Start Menu -->
 <div id="start-menu">
   <div class="menu-banner"><span>OptionDesk 98</span></div>
   <div class="menu-items" id="start-menu-items"></div>
   <div class="menu-divider" style="margin-left:28px"></div>
-  <div class="menu-item" onclick="alert('Shut Down — Coming soon')" style="margin-left:24px;padding:4px 12px;font-size:11px;cursor:pointer;">
+  <div class="menu-item" id="shutdown-btn" style="margin-left:24px;padding:4px 12px;font-size:11px;cursor:pointer;">
     <span class="mi-icon">🔌</span> Shut Down...
+  </div>
+</div>
+
+<!-- Shutdown Overlay -->
+<div id="shutdown-overlay">
+  <div class="shutdown-msg">It's now safe to turn off your computer.</div>
+  <div class="shutdown-sub">OptionDesk 98</div>
+  <div style="margin-top:24px;font-size:12px;color:#888;">Click anywhere to restart</div>
+</div>
+
+<!-- Properties Dialog -->
+<div class="dialog-overlay" id="properties-dialog">
+  <div class="dialog-box">
+    <div class="dialog-titlebar">
+      <span>Display Properties</span>
+      <button onclick="document.getElementById('properties-dialog').classList.remove('active')" style="width:16px;height:14px;font-size:8px;border:2px solid;border-color:#fff #808080 #808080 #fff;background:#c0c0c0;cursor:pointer;">✕</button>
+    </div>
+    <div class="dialog-body">
+      <div style="font-weight:bold;margin-bottom:8px;">Wallpaper</div>
+      <div id="wallpaper-options"></div>
+    </div>
+    <div class="dialog-buttons">
+      <button id="wp-apply" style="padding:2px 16px;">Apply</button>
+      <button onclick="document.getElementById('properties-dialog').classList.remove('active')" style="padding:2px 16px;">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Recycle Bin Dialog -->
+<div class="dialog-overlay" id="recycle-dialog">
+  <div class="dialog-box">
+    <div class="dialog-titlebar">
+      <span>🗑️ Recycle Bin</span>
+      <button onclick="document.getElementById('recycle-dialog').classList.remove('active')" style="width:16px;height:14px;font-size:8px;border:2px solid;border-color:#fff #808080 #808080 #fff;background:#c0c0c0;cursor:pointer;">✕</button>
+    </div>
+    <div class="dialog-body" style="text-align:center;padding:20px;">
+      <div style="font-size:48px;margin-bottom:8px;">🗑️</div>
+      <div id="recycle-content">The Recycle Bin is empty.</div>
+      <div id="recycle-items" style="margin-top:8px;text-align:left;max-height:120px;overflow:auto;"></div>
+    </div>
+    <div class="dialog-buttons">
+      <button id="recycle-empty" style="padding:2px 16px;">Empty Recycle Bin</button>
+      <button onclick="document.getElementById('recycle-dialog').classList.remove('active')" style="padding:2px 16px;">Close</button>
+    </div>
   </div>
 </div>
 
@@ -53,5 +100,6 @@
 <script src="/static/js/programs/portfolio.js"></script>
 <script src="/static/js/programs/notepad.js"></script>
 <script src="/static/js/programs/program-loader.js"></script>
+<script src="/static/js/extras.js"></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-/* Program Loader — hooks into WM to init program UIs */
+/* Program Loader — hooks into WM to init program UIs + inject help buttons */
 (function() {
   const PROGRAM_INIT = {
     'market-scanner': () => window.MarketScanner && window.MarketScanner.init('body-market-scanner'),
@@ -15,10 +15,37 @@
     'notepad': () => window.NotepadApp && window.NotepadApp.init('body-notepad'),
   };
 
-  const origCreate = WM.create.bind(WM);
+  const HELP_TOPICS = {
+    'market-scanner': 'Volume',
+    'options-analyzer': 'Call Option',
+    'sector-scanner': 'Volume',
+    'greeks-lab': 'Delta (Δ)',
+    'recommendations': 'Break-Even',
+    'watchlist': 'Volume',
+    'portfolio': 'Premium',
+  };
+
+  // Store original create before extras.js overrides it
+  const _origCreate = WM.create;
+  
   WM.create = function(id, icon, title) {
-    origCreate(id, icon, title);
+    _origCreate.call(WM, id, icon, title);
     const initFn = PROGRAM_INIT[id];
     if (initFn) setTimeout(initFn, 50);
+    
+    // Inject help button into status bar
+    const helpTopic = HELP_TOPICS[id];
+    if (helpTopic && window.addHelpButton) {
+      setTimeout(() => {
+        const win = document.getElementById('win-' + id);
+        if (win) {
+          const statusBar = win.querySelector('.win-statusbar');
+          if (statusBar) {
+            statusBar.innerHTML += ' ';
+            window.addHelpButton(statusBar, helpTopic);
+          }
+        }
+      }, 100);
+    }
   };
 })();

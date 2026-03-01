@@ -267,7 +267,7 @@ class DataEngine:
             self.provider_status["tradier"] = f"unavailable: {e}"
             logger.info(f"Tradier not available: {e}")
         
-        # yfinance as fallback (always available if installed)
+        # yfinance (always available if installed)
         try:
             yp = YFinanceProvider()
             self.providers.append(yp)
@@ -276,6 +276,26 @@ class DataEngine:
         except Exception as e:
             self.provider_status["yfinance"] = f"unavailable: {e}"
             logger.info(f"yfinance not available: {e}")
+        
+        # Polygon
+        try:
+            pp = PolygonProvider()
+            self.providers.append(pp)
+            self.provider_status["polygon"] = "available"
+            logger.info("Polygon provider initialized")
+        except Exception as e:
+            self.provider_status["polygon"] = f"unavailable: {e}"
+            logger.info(f"Polygon not available: {e}")
+        
+        # Alpha Vantage
+        try:
+            av = AlphaVantageProvider()
+            self.providers.append(av)
+            self.provider_status["alpha_vantage"] = "available"
+            logger.info("Alpha Vantage provider initialized")
+        except Exception as e:
+            self.provider_status["alpha_vantage"] = f"unavailable: {e}"
+            logger.info(f"Alpha Vantage not available: {e}")
     
     def _call_with_fallback(self, method_name, *args, **kwargs):
         last_error = None
@@ -332,3 +352,141 @@ class DataEngine:
             "active_count": sum(1 for v in self.provider_status.values() if v == "available"),
             "timestamp": datetime.utcnow().isoformat()
         }
+
+
+class PolygonProvider(DataProvider):
+    """Polygon.io data provider."""
+    name = "polygon"
+    
+    def __init__(self, api_key=None):
+        self.api_key = api_key or os.environ.get("POLYGON_API_KEY", "")
+        if not self.api_key:
+            raise ValueError("No Polygon API key")
+        self.base_url = "https://api.polygon.io"
+    
+    def _get(self, path, params=None):
+        import requests
+        params = params or {}
+        params["apiKey"] = self.api_key
+        r = requests.get(f"{self.base_url}{path}", params=params, timeout=10)
+        r.raise_for_status()
+        return r.json()
+    
+    def get_quote(self, symbol):
+        data = self._get(f"/v2/aggs/ticker/{symbol}/prev")
+        results = data.get("results", [{}])
+        if not results:
+            raise Exception(f"No data for {symbol}")
+        bar = results[0]
+        close = float(bar.get("c", 0))
+        prev_close = float(bar.get("o", close))
+        change = close - prev_close
+        return {
+            "symbol": symbol.upper(),
+            "price": round(close, 2),
+            "change": round(change, 2),
+            "change_pct": round(change / prev_close * 100 if prev_close else 0, 2),
+            "volume": int(bar.get("v", 0)),
+            "prev_close": round(prev_close, 2),
+            "market_cap": 0,
+            "source": "polygon",
+            "timestamp": datetime.utcnow().isoformat()
+        }
+    
+    def get_options_chain(self, symbol, expiration=None):
+        params = {"underlying_ticker": symbol, "limit": 250, "order": "asc", "sort": "strike_price"}
+        if expiration:
+            params["expiration_date"] = expiration
+        data = self._get("/v3/reference/options/contracts", params)
+        # Polygon contracts endpoint gives metadata; pricing needs separate calls
+        # For MVP, return contract list
+        contracts = data.get("results", [])
+        calls, puts = [], []
+        expirations = set()
+        for c in contracts:
+            exp = c.get("expiration_date", "")
+            expirations.add(exp)
+            row = {
+                "contract": c.get("ticker", ""),
+                "strike": float(c.get("strike_price", 0)),
+                "last": 0, "bid": 0, "ask": 0,
+                "volume": 0, "open_interest": 0, "iv": 0,
+                "type": c.get("contract_type", "").lower(),
+                "expiration": exp,
+                "in_the_money": False,
+            }
+            if row["type"] == "call":
+                calls.append(row)
+            else:
+                puts.append(row)
+        return {
+            "symbol": symbol.upper(),
+            "expirations": sorted(list(expirations)),
+            "selected_expiration": expiration or (sorted(list(expirations))[0] if expirations else ""),
+            "calls": calls, "puts": puts,
+            "source": "polygon",
+            "timestamp": datetime.utcnow().isoformat()
+        }
+    
+    def get_top_volume(self, limit=100):
+        data = self._get("/v2/snapshot/locale/us/markets/stocks/tickers")
+        tickers = data.get("tickers", [])
+        tickers.sort(key=lambda x: x.get("day", {}).get("v", 0), reverse=True)
+        results = []
+        for t in tickers[:limit]:
+            day = t.get("day", {})
+            prev = t.get("prevDay", {})
+            price = float(day.get("c", 0))
+            prev_close = float(prev.get("c", price))
+            change = price - prev_close
+            results.append({
+                "symbol": t.get("ticker", ""),
+                "price": round(price, 2),
+                "change": round(change, 2),
+                "change_pct": round(change / prev_close * 100 if prev_close else 0, 2),
+                "volume": int(day.get("v", 0)),
+                "market_cap": 0,
+            })
+        return {"stocks": results, "count": len(results), "source": "polygon", "timestamp": datetime.utcnow().isoformat()}
+
+
+class AlphaVantageProvider(DataProvider):
+    """Alpha Vantage data provider."""
+    name = "alpha_vantage"
+    
+    def __init__(self, api_key=None):
+        self.api_key = api_key or os.environ.get("ALPHA_VANTAGE_KEY", "")
+        if not self.api_key:
+            raise ValueError("No Alpha Vantage API key")
+        self.base_url = "https://www.alphavantage.co/query"
+    
+    def _get(self, params):
+        import requests
+        params["apikey"] = self.api_key
+        r = requests.get(self.base_url, params=params, timeout=10)
+        r.raise_for_status()
+        return r.json()
+    
+    def get_quote(self, symbol):
+        data = self._get({"function": "GLOBAL_QUOTE", "symbol": symbol})
+        q = data.get("Global Quote", {})
+        price = float(q.get("05. price", 0))
+        change = float(q.get("09. change", 0))
+        change_pct = float(q.get("10. change percent", "0").replace("%", ""))
+        return {
+            "symbol": symbol.upper(),
+            "price": round(price, 2),
+            "change": round(change, 2),
+            "change_pct": round(change_pct, 2),
+            "volume": int(q.get("06. volume", 0)),
+            "prev_close": round(float(q.get("08. previous close", 0)), 2),
+            "market_cap": 0,
+            "source": "alpha_vantage",
+            "timestamp": datetime.utcnow().isoformat()
+        }
+    
+    def get_options_chain(self, symbol, expiration=None):
+        raise NotImplementedError("Alpha Vantage doesn't provide options data")
+    
+    def get_top_volume(self, limit=100):
+        raise NotImplementedError("Alpha Vantage doesn't support volume scanning")

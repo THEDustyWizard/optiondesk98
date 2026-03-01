@@ -247,3 +247,53 @@ body {
   height: 1px; margin: 2px 4px;
   border-top: 1px solid #808080; border-bottom: 1px solid #fff;
 }
+
+/* ---- Shutdown Overlay ---- */
+#shutdown-overlay {
+  display: none; position: fixed; inset: 0;
+  background: #000; z-index: 99999;
+  flex-direction: column; align-items: center; justify-content: center;
+  color: #fff; font-family: 'MS Sans Serif', Arial, sans-serif;
+}
+#shutdown-overlay.active { display: flex; }
+#shutdown-overlay .shutdown-msg { font-size: 24px; margin-bottom: 12px; }
+#shutdown-overlay .shutdown-sub { font-size: 14px; color: #ff8c00; }
+
+/* ---- Properties Dialog ---- */
+.dialog-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.3); z-index: 15000;
+  align-items: center; justify-content: center;
+}
+.dialog-overlay.active { display: flex; }
+.dialog-box {
+  background: #c0c0c0; border: 2px solid;
+  border-color: #fff #808080 #808080 #fff;
+  min-width: 340px; box-shadow: 2px 2px 0 rgba(0,0,0,0.4);
+}
+.dialog-titlebar {
+  height: 20px; padding: 1px 4px;
+  background: linear-gradient(90deg, #000080, #1084d0);
+  color: #fff; font-weight: bold; font-size: 11px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.dialog-body { padding: 12px; font-size: 11px; }
+.dialog-buttons { padding: 0 12px 12px; display: flex; gap: 4px; justify-content: flex-end; }
+
+/* ---- Wallpaper Options ---- */
+.wallpaper-preview {
+  width: 120px; height: 80px; border: 2px solid;
+  border-color: #808080 #fff #fff #808080;
+  cursor: pointer; display: inline-block; margin: 4px;
+}
+.wallpaper-preview.selected { border-color: #000080; outline: 2px solid #000080; }
+
+/* ---- Help Button ---- */
+.help-btn {
+  display: inline-block; width: 14px; height: 14px;
+  background: #ffff00; color: #000; font-size: 10px;
+  text-align: center; line-height: 14px; border-radius: 7px;
+  cursor: help; font-weight: bold; margin-left: 4px;
+  border: 1px solid #808080; vertical-align: middle;
+}
+.help-btn:hover { background: #ffdd00; }
