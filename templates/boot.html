@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OptionDesk 98 — Boot</title>
+<link rel="stylesheet" href="https://unpkg.com/98.css">
+<link rel="stylesheet" href="/static/css/boot.css">
+</head>
+<body>
+<div id="bios-screen" class="boot-phase active">
+  <div class="bios-text">
+    <p>OptionDesk 98 BIOS v1.0</p>
+    <p>Copyright (C) 2026 OptionDesk Corp.</p>
+    <p>&nbsp;</p>
+    <p>CPU: Market Analysis Engine @ 3.14 GHz</p>
+    <p>Memory: 640K Options Ought to Be Enough</p>
+    <p>Detecting Greeks Coprocessor... <span class="blink">OK</span></p>
+    <p>&nbsp;</p>
+    <p>Press DEL to enter Setup, F12 for Boot Menu</p>
+  </div>
+</div>
+
+<div id="loading-screen" class="boot-phase">
+  <div class="loading-container">
+    <div class="od98-logo-boot">
+      <div class="logo-icon">📈</div>
+      <div class="logo-text">OptionDesk 98</div>
+    </div>
+    <div class="progress-outer">
+      <div class="progress-inner" id="progress-bar"></div>
+    </div>
+    <p class="loading-msg" id="loading-msg">Starting OptionDesk 98...</p>
+  </div>
+</div>
+
+<div id="welcome-screen" class="boot-phase">
+  <div class="welcome-container">
+    <div class="logo-icon welcome-logo">📈</div>
+    <h1>Welcome to OptionDesk 98</h1>
+    <p>Your desktop. Your edge.</p>
+  </div>
+</div>
+
+<script src="/static/js/boot.js"></script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OptionDesk 98</title>
+<link rel="stylesheet" href="https://unpkg.com/98.css">
+<link rel="stylesheet" href="/static/css/desktop.css">
+</head>
+<body>
+
+<div id="desktop">
+  <div id="icon-grid"></div>
+</div>
+
+<!-- Context Menu -->
+<div id="context-menu">
+  <div class="ctx-item" onclick="alert('Properties — Coming soon')">Properties</div>
+  <div class="ctx-divider"></div>
+  <div class="ctx-item" onclick="location.reload()">Refresh</div>
+  <div class="ctx-divider"></div>
+  <div class="ctx-item" onclick="alert('New Folder — Coming soon')">New Folder</div>
+</div>
+
+<!-- Taskbar -->
+<div id="taskbar">
+  <button id="start-btn">
+    <span class="start-icon">📈</span> Start
+  </button>
+  <div id="taskbar-programs"></div>
+  <div id="clock"></div>
+</div>
+
+<!-- Start Menu -->
+<div id="start-menu">
+  <div class="menu-banner"><span>OptionDesk 98</span></div>
+  <div class="menu-items" id="start-menu-items"></div>
+  <div class="menu-divider" style="margin-left:28px"></div>
+  <div class="menu-item" onclick="alert('Shut Down — Coming soon')" style="margin-left:24px;padding:4px 12px;font-size:11px;cursor:pointer;">
+    <span class="mi-icon">🔌</span> Shut Down...
+  </div>
+</div>
+
+<script src="/static/js/window.js"></script>
+<script src="/static/js/desktop.js"></script>
+</body>
+</html>

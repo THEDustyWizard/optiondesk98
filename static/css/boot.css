@@ -1,0 +1,33 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #000; color: #aaa; font-family: 'Courier New', monospace; overflow: hidden; width: 100vw; height: 100vh; }
+
+.boot-phase { position: fixed; inset: 0; display: none; justify-content: center; align-items: center; }
+.boot-phase.active { display: flex; }
+
+/* BIOS */
+#bios-screen { background: #000; align-items: flex-start; justify-content: flex-start; padding: 40px; }
+.bios-text p { font-size: 16px; line-height: 1.6; color: #aaa; }
+.blink { animation: blink 1s step-end infinite; color: #0f0; }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* Loading */
+#loading-screen { background: #008080; flex-direction: column; }
+.loading-container { text-align: center; }
+.od98-logo-boot { margin-bottom: 40px; }
+.logo-icon { font-size: 64px; margin-bottom: 8px; }
+.logo-text { font-family: 'MS Sans Serif', 'Arial', sans-serif; font-size: 32px; font-weight: bold; color: #fff; text-shadow: 2px 2px 0 #004040; }
+.progress-outer {
+  width: 320px; height: 24px; margin: 0 auto 16px;
+  background: #c0c0c0;
+  border: 2px solid; border-color: #808080 #fff #fff #808080;
+  padding: 2px;
+}
+.progress-inner { height: 100%; width: 0%; background: #000080; transition: width 0.3s; }
+.loading-msg { font-family: 'MS Sans Serif', 'Arial', sans-serif; font-size: 14px; color: #fff; }
+
+/* Welcome */
+#welcome-screen { background: #008080; flex-direction: column; text-align: center; opacity: 0; transition: opacity 0.8s; }
+#welcome-screen.active { opacity: 1; }
+.welcome-logo { font-size: 80px; margin-bottom: 16px; }
+#welcome-screen h1 { font-family: 'MS Sans Serif', 'Arial', sans-serif; color: #fff; font-size: 36px; margin-bottom: 8px; }
+#welcome-screen p { font-family: 'MS Sans Serif', 'Arial', sans-serif; color: #ddd; font-size: 18px; font-style: italic; }
