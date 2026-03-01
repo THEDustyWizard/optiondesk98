@@ -49,10 +49,11 @@ A Win98-themed options trading dashboard that runs locally. Real market data, th
 - L2-eligible strategies: Long Calls, Long Puts
 
 ### 🔌 Multi-Provider Data
-- **Tradier** (free sandbox tier, API key required)
-- **yfinance** (free, no key needed — default)
-- Automatic fallback between providers
-- Health check on startup
+- **Schwab** (primary — your brokerage, requires OAuth setup)
+- **yfinance** (free, no key needed — default fallback)
+- **Massive** (formerly Polygon.io — free tier available)
+- **Alpha Vantage** (free tier)
+- Automatic fallback chain with health check
 
 ## Quick Start
 
@@ -114,7 +115,7 @@ Or configure them in Settings.exe within the app.
 
 - **Backend:** Python / Flask
 - **Pricing:** NumPy, SciPy
-- **Data:** yfinance, Tradier API
+- **Data:** Schwab API, yfinance, Massive (fka Polygon.io), Alpha Vantage
 - **Frontend:** Vanilla JS + [98.css](https://jdan.github.io/98.css/)
 - **News:** feedparser + RSS
 - **Storage:** localStorage (client-side)

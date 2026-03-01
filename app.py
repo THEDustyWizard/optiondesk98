@@ -219,11 +219,10 @@ def save_settings():
         
         # Apply API keys to environment so providers can pick them up
         key_map = {
-            "tradier_key": "TRADIER_API_KEY",
-            "polygon_key": "POLYGON_API_KEY",
-            "av_key": "ALPHA_VANTAGE_KEY",
             "schwab_key": "SCHWAB_API_KEY",
             "schwab_secret": "SCHWAB_API_SECRET",
+            "massive_key": "MASSIVE_API_KEY",
+            "av_key": "ALPHA_VANTAGE_KEY",
         }
         for field, env_var in key_map.items():
             val = data.get(field, "")
