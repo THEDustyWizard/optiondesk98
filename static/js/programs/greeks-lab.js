@@ -66,44 +66,44 @@
         const type = inputs.type.value;
         
         try {
-          const res = await fetch(\`/api/price?S=\${S}&K=\${K}&T=\${T}&r=\${r}&sigma=\${sigma}&type=\${type}\`);
+          const res = await fetch(`/api/price?S=${S}&K=${K}&T=${T}&r=${r}&sigma=${sigma}&type=${type}`);
           const data = await res.json();
           if (data.error) throw new Error(data.error);
           lastData = data;
           
-          pricesDiv.innerHTML = \`
+          pricesDiv.innerHTML = `
             <table style="width:100%;font-size:11px;border-collapse:collapse;">
-              <tr><td style="padding:2px;">Black-Scholes:</td><td style="text-align:right;font-weight:bold;">$\${data.prices.black_scholes.toFixed(4)}</td></tr>
-              <tr><td style="padding:2px;">Binomial (100-step):</td><td style="text-align:right;font-weight:bold;">$\${data.prices.binomial.toFixed(4)}</td></tr>
-              <tr><td style="padding:2px;">Monte Carlo (10k):</td><td style="text-align:right;font-weight:bold;">$\${data.prices.monte_carlo.toFixed(4)}</td></tr>
-            </table>\`;
+              <tr><td style="padding:2px;">Black-Scholes:</td><td style="text-align:right;font-weight:bold;">$${data.prices.black_scholes.toFixed(4)}</td></tr>
+              <tr><td style="padding:2px;">Binomial (100-step):</td><td style="text-align:right;font-weight:bold;">$${data.prices.binomial.toFixed(4)}</td></tr>
+              <tr><td style="padding:2px;">Monte Carlo (10k):</td><td style="text-align:right;font-weight:bold;">$${data.prices.monte_carlo.toFixed(4)}</td></tr>
+            </table>`;
           
           const g = data.greeks;
-          greeksDiv.innerHTML = \`
+          greeksDiv.innerHTML = `
             <table style="width:100%;font-size:11px;border-collapse:collapse;">
               <tr style="border-bottom:1px solid #ddd;"><td colspan="4" style="padding:2px;font-weight:bold;color:#000080;">First Order</td></tr>
               <tr>
-                <td style="padding:2px;">Δ Delta:</td><td style="text-align:right;width:80px;font-weight:bold;">\${g.delta.toFixed(4)}</td>
-                <td style="padding:2px;">Γ Gamma:</td><td style="text-align:right;width:80px;font-weight:bold;">\${g.gamma.toFixed(4)}</td>
+                <td style="padding:2px;">Δ Delta:</td><td style="text-align:right;width:80px;font-weight:bold;">${g.delta.toFixed(4)}</td>
+                <td style="padding:2px;">Γ Gamma:</td><td style="text-align:right;width:80px;font-weight:bold;">${g.gamma.toFixed(4)}</td>
               </tr>
               <tr>
-                <td style="padding:2px;">Θ Theta:</td><td style="text-align:right;font-weight:bold;">\${g.theta.toFixed(4)}</td>
-                <td style="padding:2px;">ν Vega:</td><td style="text-align:right;font-weight:bold;">\${g.vega.toFixed(4)}</td>
+                <td style="padding:2px;">Θ Theta:</td><td style="text-align:right;font-weight:bold;">${g.theta.toFixed(4)}</td>
+                <td style="padding:2px;">ν Vega:</td><td style="text-align:right;font-weight:bold;">${g.vega.toFixed(4)}</td>
               </tr>
               <tr>
-                <td style="padding:2px;">ρ Rho:</td><td style="text-align:right;font-weight:bold;">\${g.rho.toFixed(4)}</td>
+                <td style="padding:2px;">ρ Rho:</td><td style="text-align:right;font-weight:bold;">${g.rho.toFixed(4)}</td>
                 <td></td><td></td>
               </tr>
               <tr style="border-bottom:1px solid #ddd;"><td colspan="4" style="padding:4px 2px 2px;font-weight:bold;color:#000080;">Second Order</td></tr>
               <tr>
-                <td style="padding:2px;">Vanna:</td><td style="text-align:right;font-weight:bold;">\${g.vanna.toFixed(4)}</td>
-                <td style="padding:2px;">Volga:</td><td style="text-align:right;font-weight:bold;">\${g.volga.toFixed(4)}</td>
+                <td style="padding:2px;">Vanna:</td><td style="text-align:right;font-weight:bold;">${g.vanna.toFixed(4)}</td>
+                <td style="padding:2px;">Volga:</td><td style="text-align:right;font-weight:bold;">${g.volga.toFixed(4)}</td>
               </tr>
               <tr>
-                <td style="padding:2px;">Charm:</td><td style="text-align:right;font-weight:bold;">\${g.charm.toFixed(4)}</td>
+                <td style="padding:2px;">Charm:</td><td style="text-align:right;font-weight:bold;">${g.charm.toFixed(4)}</td>
                 <td></td><td></td>
               </tr>
-            </table>\`;
+            </table>`;
           
           // Update slider range
           const lo = Math.round(K * 0.7);
@@ -131,15 +131,15 @@
         const type = inputs.type.value;
         
         try {
-          const res = await fetch(\`/api/price?S=\${spotNew.toFixed(2)}&K=\${K}&T=\${T}&r=\${r}&sigma=\${sigma}&type=\${type}\`);
+          const res = await fetch(`/api/price?S=${spotNew.toFixed(2)}&K=${K}&T=${T}&r=${r}&sigma=${sigma}&type=${type}`);
           const data = await res.json();
           const g = data.greeks;
-          sliderResult.innerHTML = \`
-            Price: <strong>$\${data.prices.black_scholes.toFixed(4)}</strong> |
-            Δ <strong>\${g.delta.toFixed(3)}</strong> |
-            Γ <strong>\${g.gamma.toFixed(4)}</strong> |
-            Θ <strong>\${g.theta.toFixed(4)}</strong> |
-            ν <strong>\${g.vega.toFixed(4)}</strong>\`;
+          sliderResult.innerHTML = `
+            Price: <strong>$${data.prices.black_scholes.toFixed(4)}</strong> |
+            Δ <strong>${g.delta.toFixed(3)}</strong> |
+            Γ <strong>${g.gamma.toFixed(4)}</strong> |
+            Θ <strong>${g.theta.toFixed(4)}</strong> |
+            ν <strong>${g.vega.toFixed(4)}</strong>`;
         } catch(e) { /* skip */ }
       }
       
@@ -149,3 +149,4 @@
     }
   };
 })();
+WM.registerProgram('greeks-lab', (containerId) => window.GreeksLab && window.GreeksLab.init(containerId));

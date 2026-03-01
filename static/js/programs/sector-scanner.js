@@ -78,3 +78,4 @@
     }
   };
 })();
+WM.registerProgram('sector-scanner', (containerId) => window.SectorScanner && window.SectorScanner.init(containerId));

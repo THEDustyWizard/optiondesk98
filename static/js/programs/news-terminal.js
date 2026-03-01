@@ -102,3 +102,4 @@
     }
   };
 })();
+WM.registerProgram('news-terminal', (containerId) => window.NewsTerminal && window.NewsTerminal.init(containerId));

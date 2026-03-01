@@ -47,3 +47,4 @@
     }
   };
 })();
+WM.registerProgram('live-tv', (containerId) => window.LiveTV && window.LiveTV.init(containerId));

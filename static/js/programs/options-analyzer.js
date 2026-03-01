@@ -139,3 +139,4 @@
     }
   };
 })();
+WM.registerProgram('options-analyzer', (containerId) => window.OptionsAnalyzer && window.OptionsAnalyzer.init(containerId));

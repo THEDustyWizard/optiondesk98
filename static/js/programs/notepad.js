@@ -21,3 +21,4 @@
     }
   };
 })();
+WM.registerProgram('notepad', (containerId) => window.NotepadApp && window.NotepadApp.init(containerId));

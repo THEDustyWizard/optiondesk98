@@ -58,41 +58,41 @@
                             rec.strategy.includes('Cash') ? '#660066' : '#663300';
           
           let extraInfo = '';
-          if (rec.yield_pct) extraInfo += \`<div>Yield: <strong>\${rec.yield_pct}%</strong> (annualized: \${rec.annual_yield}%)</div>\`;
-          if (rec.collateral) extraInfo += \`<div>Collateral: <strong>$\${rec.collateral.toLocaleString()}</strong></div>\`;
-          if (rec.risk_reward) extraInfo += \`<div>Risk/Reward: <strong>\${rec.risk_reward}:1</strong></div>\`;
-          if (rec.width) extraInfo += \`<div>Spread Width: <strong>$\${rec.width}</strong> (\${rec.strike} / \${rec.strike_short})</div>\`;
+          if (rec.yield_pct) extraInfo += `<div>Yield: <strong>${rec.yield_pct}%</strong> (annualized: ${rec.annual_yield}%)</div>`;
+          if (rec.collateral) extraInfo += `<div>Collateral: <strong>$${rec.collateral.toLocaleString()}</strong></div>`;
+          if (rec.risk_reward) extraInfo += `<div>Risk/Reward: <strong>${rec.risk_reward}:1</strong></div>`;
+          if (rec.width) extraInfo += `<div>Spread Width: <strong>$${rec.width}</strong> (${rec.strike} / ${rec.strike_short})</div>`;
           
           const maxGain = typeof rec.max_gain === 'string' ? rec.max_gain : '$' + rec.max_gain.toLocaleString();
           
-          return \`
+          return `
             <div style="border:2px solid;border-color:#fff #808080 #808080 #fff;margin-bottom:4px;background:#fff;">
-              <div style="background:\${stratColor};color:#fff;padding:2px 6px;display:flex;justify-content:space-between;">
-                <span><strong>\${rec.strategy}</strong> — \${rec.contract}</span>
-                <span style="color:\${scoreColor};background:#fff;padding:0 6px;font-weight:bold;">Score: \${rec.score}</span>
+              <div style="background:${stratColor};color:#fff;padding:2px 6px;display:flex;justify-content:space-between;">
+                <span><strong>${rec.strategy}</strong> — ${rec.contract}</span>
+                <span style="color:${scoreColor};background:#fff;padding:0 6px;font-weight:bold;">Score: ${rec.score}</span>
               </div>
               <div style="padding:6px;display:flex;gap:12px;flex-wrap:wrap;">
                 <div>
-                  <div>Strike: <strong>$\${rec.strike.toFixed(2)}</strong></div>
-                  <div>Exp: <strong>\${rec.expiration}</strong> (\${rec.dte}d)</div>
-                  <div>Premium: <strong>$\${rec.premium.toFixed(2)}</strong> ($\${rec.premium_total.toFixed(2)}/contract)</div>
-                  <div>IV: <strong>\${rec.iv.toFixed(1)}%</strong></div>
-                  \${extraInfo}
+                  <div>Strike: <strong>$${rec.strike.toFixed(2)}</strong></div>
+                  <div>Exp: <strong>${rec.expiration}</strong> (${rec.dte}d)</div>
+                  <div>Premium: <strong>$${rec.premium.toFixed(2)}</strong> ($${rec.premium_total.toFixed(2)}/contract)</div>
+                  <div>IV: <strong>${rec.iv.toFixed(1)}%</strong></div>
+                  ${extraInfo}
                 </div>
                 <div>
-                  <div>Break-even: <strong>$\${rec.breakeven.toFixed(2)}</strong></div>
-                  <div style="color:#008000;">Max Gain: <strong>\${maxGain}</strong></div>
-                  <div style="color:#cc0000;">Max Loss: <strong>$\${rec.max_loss.toLocaleString()}</strong></div>
-                  <div>P(Profit): <strong>\${rec.pop.toFixed(1)}%</strong></div>
+                  <div>Break-even: <strong>$${rec.breakeven.toFixed(2)}</strong></div>
+                  <div style="color:#008000;">Max Gain: <strong>${maxGain}</strong></div>
+                  <div style="color:#cc0000;">Max Loss: <strong>$${rec.max_loss.toLocaleString()}</strong></div>
+                  <div>P(Profit): <strong>${rec.pop.toFixed(1)}%</strong></div>
                 </div>
                 <div>
-                  <div>Δ \${rec.delta.toFixed(3)} | Θ \${rec.theta.toFixed(4)}</div>
-                  <div>Vol: \${(rec.volume||0).toLocaleString()} | OI: \${(rec.open_interest||0).toLocaleString()}</div>
-                  <div>EV: <strong>\${rec.ev.toFixed(4)}</strong></div>
-                  <div>Signal: <strong style="color:\${signalColor};">\${rec.signal}</strong></div>
+                  <div>Δ ${rec.delta.toFixed(3)} | Θ ${rec.theta.toFixed(4)}</div>
+                  <div>Vol: ${(rec.volume||0).toLocaleString()} | OI: ${(rec.open_interest||0).toLocaleString()}</div>
+                  <div>EV: <strong>${rec.ev.toFixed(4)}</strong></div>
+                  <div>Signal: <strong style="color:${signalColor};">${rec.signal}</strong></div>
                 </div>
               </div>
-            </div>\`;
+            </div>`;
         }).join('');
       }
       
@@ -112,16 +112,16 @@
         status.textContent = 'Screening all strategies...';
         results.innerHTML = '<div style="text-align:center;padding:40px;color:#888;">Analyzing options chain for all L2 strategies...</div>';
         try {
-          const r = await fetch(\`/api/recommendations/\${sym}?risk=\${riskSelect.value}\`);
+          const r = await fetch(`/api/recommendations/${sym}?risk=${riskSelect.value}`);
           const data = await r.json();
           if (data.error) throw new Error(data.error);
           allRecs = data.recommendations;
           const strategies = [...new Set(allRecs.map(r => r.strategy))];
-          status.textContent = \`\${data.count} picks across \${strategies.length} strategies • Spot: $\${data.spot_price}\`;
+          status.textContent = `${data.count} picks across ${strategies.length} strategies • Spot: $${data.spot_price}`;
           renderRecs();
         } catch(e) {
           status.textContent = 'Error';
-          results.innerHTML = \`<div style="text-align:center;padding:40px;color:red;">\${e.message}</div>\`;
+          results.innerHTML = `<div style="text-align:center;padding:40px;color:red;">${e.message}</div>`;
         }
       }
       
@@ -130,3 +130,4 @@
     }
   };
 })();
+WM.registerProgram('recommendations', (containerId) => window.Recommendations && window.Recommendations.init(containerId));

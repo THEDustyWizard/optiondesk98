@@ -119,3 +119,4 @@
     }
   };
 })();
+WM.registerProgram('portfolio', (containerId) => window.Portfolio && window.Portfolio.init(containerId));

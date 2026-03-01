@@ -89,3 +89,4 @@
     }
   };
 })();
+WM.registerProgram('watchlist', (containerId) => window.Watchlist && window.Watchlist.init(containerId));

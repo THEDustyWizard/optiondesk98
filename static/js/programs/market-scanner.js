@@ -93,3 +93,4 @@
     }
   };
 })();
+WM.registerProgram('market-scanner', (containerId) => window.MarketScanner && window.MarketScanner.init(containerId));

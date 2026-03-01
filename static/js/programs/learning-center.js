@@ -123,3 +123,4 @@
     }
   };
 })();
+WM.registerProgram('learning-center', (containerId) => window.LearningCenter && window.LearningCenter.init(containerId));

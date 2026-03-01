@@ -119,3 +119,4 @@
     }
   };
 })();
+WM.registerProgram('settings', (containerId) => window.SettingsApp && window.SettingsApp.init(containerId));

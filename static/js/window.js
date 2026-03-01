@@ -2,11 +2,23 @@
 const WM = (function () {
   let zIndex = 100;
   let cascadeOffset = 0;
-  const windows = {};  // id -> { el, minimized, maximized, prevRect }
+  const windows = {};
+  
+  // Program init registry — programs register themselves here
+  const _initCallbacks = {};
+  
+  function registerProgram(id, initFn) {
+    _initCallbacks[id] = initFn;
+  }
 
   function create(id, icon, title) {
+    // Recycle bin → dialog (if handler registered)
+    if (id === 'recycle-bin' && window._openRecycleBin) {
+      window._openRecycleBin();
+      return;
+    }
+    
     if (windows[id]) {
-      // Already open — restore & focus
       if (windows[id].minimized) restore(id);
       focus(id);
       return;
@@ -42,7 +54,7 @@ const WM = (function () {
         <div style="text-align:center;padding:60px 20px;color:#888;">
           <div style="font-size:48px;margin-bottom:16px;">${icon}</div>
           <h2 style="margin-bottom:8px;color:#000;">${title}</h2>
-          <p>Coming in Phase 2</p>
+          <p>Loading...</p>
         </div>
       </div>
       <div class="win-statusbar">Ready</div>
@@ -54,7 +66,6 @@ const WM = (function () {
     document.getElementById("desktop").appendChild(el);
     windows[id] = { el, minimized: false, maximized: false, prevRect: null };
 
-    // Titlebar controls
     el.querySelector(".win-controls").addEventListener("click", (e) => {
       const btn = e.target.closest("button");
       if (!btn) return;
@@ -65,18 +76,33 @@ const WM = (function () {
       else if (action === "close") close(id);
     });
 
-    // Focus on click
     el.addEventListener("mousedown", () => focus(id));
-
-    // Drag
     initDrag(el, id);
-
-    // Resize
     initResize(el);
-
-    // Add taskbar item
     addTaskbarItem(id, icon, title);
     focus(id);
+    
+    // Run program init callback if registered
+    if (_initCallbacks[id]) {
+      setTimeout(() => {
+        try {
+          _initCallbacks[id]('body-' + id);
+        } catch(e) {
+          console.error('[WM] Init failed for', id, e);
+        }
+      }, 50);
+    }
+    
+    // Add help button if available
+    if (window.addHelpButton) {
+      setTimeout(() => {
+        const statusBar = el.querySelector('.win-statusbar');
+        if (statusBar) {
+          statusBar.innerHTML += ' ';
+          window.addHelpButton(statusBar, title);
+        }
+      }, 100);
+    }
   }
 
   function focus(id) {
@@ -84,7 +110,6 @@ const WM = (function () {
     Object.values(windows).forEach(w => w.el.classList.add("inactive"));
     windows[id].el.classList.remove("inactive");
     windows[id].el.style.zIndex = ++zIndex;
-    // Update taskbar
     document.querySelectorAll(".taskbar-item").forEach(t => t.classList.remove("active"));
     const tb = document.getElementById("tb-" + id);
     if (tb) tb.classList.add("active");
@@ -138,25 +163,19 @@ const WM = (function () {
   function initDrag(el, id) {
     const titlebar = el.querySelector(".win-titlebar");
     let dragging = false, sx, sy, ox, oy;
-
     titlebar.addEventListener("mousedown", (e) => {
       if (e.target.closest("button")) return;
       if (windows[id] && windows[id].maximized) return;
-      dragging = true;
-      sx = e.clientX; sy = e.clientY;
+      dragging = true; sx = e.clientX; sy = e.clientY;
       ox = el.offsetLeft; oy = el.offsetTop;
       e.preventDefault();
     });
-
     document.addEventListener("mousemove", (e) => {
       if (!dragging) return;
       el.style.left = (ox + e.clientX - sx) + "px";
       el.style.top = (oy + e.clientY - sy) + "px";
     });
-
     document.addEventListener("mouseup", () => { dragging = false; });
-
-    // Double-click titlebar to maximize
     titlebar.addEventListener("dblclick", (e) => {
       if (e.target.closest("button")) return;
       toggleMaximize(id);
@@ -164,25 +183,20 @@ const WM = (function () {
   }
 
   function initResize(el) {
-    const handles = el.querySelectorAll(".resize-handle");
-    handles.forEach(handle => {
+    el.querySelectorAll(".resize-handle").forEach(handle => {
       let resizing = false, sx, sy, sw, sh;
       const isRight = handle.classList.contains("rh-right") || handle.classList.contains("rh-corner");
       const isBottom = handle.classList.contains("rh-bottom") || handle.classList.contains("rh-corner");
-
       handle.addEventListener("mousedown", (e) => {
-        resizing = true;
-        sx = e.clientX; sy = e.clientY;
+        resizing = true; sx = e.clientX; sy = e.clientY;
         sw = el.offsetWidth; sh = el.offsetHeight;
         e.preventDefault(); e.stopPropagation();
       });
-
       document.addEventListener("mousemove", (e) => {
         if (!resizing) return;
         if (isRight) el.style.width = Math.max(320, sw + e.clientX - sx) + "px";
         if (isBottom) el.style.height = Math.max(200, sh + e.clientY - sy) + "px";
       });
-
       document.addEventListener("mouseup", () => { resizing = false; });
     });
   }
@@ -194,16 +208,12 @@ const WM = (function () {
     item.id = "tb-" + id;
     item.innerHTML = `<span class="tb-icon">${icon}</span>${title}`;
     item.addEventListener("click", () => {
-      if (windows[id] && windows[id].minimized) {
-        restore(id);
-      } else if (windows[id] && windows[id].el.style.zIndex == zIndex) {
-        minimize(id);
-      } else {
-        focus(id);
-      }
+      if (windows[id] && windows[id].minimized) restore(id);
+      else if (windows[id] && windows[id].el.style.zIndex == zIndex) minimize(id);
+      else focus(id);
     });
     container.appendChild(item);
   }
 
-  return { create, focus, minimize, restore, close };
+  return { create, focus, minimize, restore, close, registerProgram };
 })();
